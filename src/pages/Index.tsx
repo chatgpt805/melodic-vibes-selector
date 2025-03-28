@@ -1,11 +1,12 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useMusic } from "@/contexts/MusicContext";
 import ApiKeyForm from "@/components/ApiKeyForm";
 import MusicFilters from "@/components/MusicFilters";
+import VideoPlayer from "@/components/VideoPlayer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Play } from "lucide-react";
 
 const Index = () => {
   const { 
@@ -19,6 +20,8 @@ const Index = () => {
     setSearchQuery 
   } = useMusic();
 
+  const [playingVideo, setPlayingVideo] = useState<{id: string, title: string} | null>(null);
+
   useEffect(() => {
     if (hasApiKey) {
       loadTrendingMusic(searchFilters.regionCode);
@@ -30,6 +33,14 @@ const Index = () => {
     if (searchQuery.trim()) {
       searchMusicVideos(searchQuery, searchFilters);
     }
+  };
+
+  const handlePlayVideo = (videoId: string, title: string) => {
+    setPlayingVideo({ id: videoId, title });
+  };
+
+  const closePlayer = () => {
+    setPlayingVideo(null);
   };
 
   if (!hasApiKey) {
@@ -79,16 +90,26 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {videos.map((video) => (
-              <div key={video.id} className="music-card">
-                <div className="relative aspect-video">
+              <div key={video.id} className="music-card group relative">
+                <div className="relative aspect-video overflow-hidden rounded-md">
                   <img 
                     src={video.thumbnail} 
                     alt={video.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-8"
+                      onClick={() => handlePlayVideo(video.id, video.title)}
+                    >
+                      <Play className="h-8 w-8" />
+                    </Button>
+                  </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold line-clamp-2 mb-1">{video.title}</h3>
+                  <h3 className="font-semibold line-clamp-2 mb-1 group-hover:text-primary transition-colors">{video.title}</h3>
                   <p className="text-sm text-muted-foreground">{video.channelTitle}</p>
                   <div className="flex mt-2 justify-between items-center">
                     <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
@@ -108,6 +129,14 @@ const Index = () => {
           </div>
         )}
       </main>
+
+      {/* Video player component */}
+      <VideoPlayer 
+        videoId={playingVideo?.id ?? null}
+        isOpen={!!playingVideo}
+        onClose={closePlayer}
+        title={playingVideo?.title}
+      />
     </div>
   );
 };
