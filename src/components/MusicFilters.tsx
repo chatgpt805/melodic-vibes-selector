@@ -5,12 +5,18 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import CountrySelector from "./CountrySelector";
+import { Button } from "@/components/ui/button";
+import { emotionToMusicMap, EmotionTypes } from "@/lib/emotions";
 
 const MusicFilters: React.FC = () => {
-  const { searchFilters, updateSearchFilters } = useMusic();
+  const { searchFilters, updateSearchFilters, searchMusicVideos } = useMusic();
 
   const handleTimeFilterChange = (value: string) => {
     updateSearchFilters({ isClassic: value === "classic" });
+  };
+
+  const handleEmotionFilter = (emotion: EmotionTypes) => {
+    searchMusicVideos(emotionToMusicMap[emotion], searchFilters);
   };
 
   return (
@@ -38,7 +44,6 @@ const MusicFilters: React.FC = () => {
           </ToggleGroup>
         </div>
         
-        {/* Language filter could be expanded in the future */}
         <div className="flex items-center space-x-2">
           <Checkbox 
             id="englishOnly" 
@@ -50,6 +55,18 @@ const MusicFilters: React.FC = () => {
           <Label htmlFor="englishOnly" className="text-sm font-medium cursor-pointer">
             English Only
           </Label>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <h3 className="text-sm font-medium text-muted-foreground mb-2">Quick Mood Filters</h3>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("happy")}>Happy</Button>
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("sad")}>Sad</Button>
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("energetic")}>Energetic</Button>
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("relaxed")}>Relaxed</Button>
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("romantic")}>Romantic</Button>
+          <Button size="sm" variant="outline" onClick={() => handleEmotionFilter("focused")}>Focused</Button>
         </div>
       </div>
     </div>

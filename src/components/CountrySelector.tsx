@@ -22,6 +22,7 @@ import { useMusic } from "@/contexts/MusicContext";
 const countries = [
   { code: "US", name: "United States", flag: "🇺🇸" },
   { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "NP", name: "Nepal", flag: "🇳🇵" },
   { code: "IN", name: "India", flag: "🇮🇳" },
   { code: "JP", name: "Japan", flag: "🇯🇵" },
   { code: "KR", name: "South Korea", flag: "🇰🇷" },
