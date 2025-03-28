@@ -1,12 +1,15 @@
-
 import React, { useEffect, useState } from "react";
 import { useMusic } from "@/contexts/MusicContext";
 import ApiKeyForm from "@/components/ApiKeyForm";
 import MusicFilters from "@/components/MusicFilters";
 import VideoPlayer from "@/components/VideoPlayer";
+import ChatbotSuggestions from "@/components/ChatbotSuggestions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Play } from "lucide-react";
+import { Search, Play, MessageSquare } from "lucide-react";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const Index = () => {
   const { 
@@ -21,6 +24,8 @@ const Index = () => {
   } = useMusic();
 
   const [playingVideo, setPlayingVideo] = useState<{id: string, title: string} | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (hasApiKey) {
@@ -51,6 +56,10 @@ const Index = () => {
     );
   }
 
+  const ChatbotWrapper = isDesktop ? Dialog : Drawer;
+  const ChatbotTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
+  const ChatbotContainer = isDesktop ? DialogContent : DrawerContent;
+
   return (
     <div className="min-h-screen p-4 md:p-8">
       <header className="mb-8">
@@ -73,6 +82,20 @@ const Index = () => {
             <Search className="mr-2" />
             Search
           </Button>
+          
+          <ChatbotWrapper open={isChatOpen} onOpenChange={setIsChatOpen}>
+            <ChatbotTrigger asChild>
+              <Button variant="outline">
+                <MessageSquare className="mr-2" />
+                Assistant
+              </Button>
+            </ChatbotTrigger>
+            <ChatbotContainer className={isDesktop ? "max-w-md p-0 bg-slate-900 border-slate-800" : "p-0 pb-0 bg-slate-900"}>
+              <div className="h-[70vh] md:h-[500px]">
+                <ChatbotSuggestions />
+              </div>
+            </ChatbotContainer>
+          </ChatbotWrapper>
         </div>
       </form>
 
