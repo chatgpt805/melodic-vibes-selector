@@ -29,7 +29,7 @@ const ChatbotSuggestions: React.FC = () => {
     if (!input.trim()) return;
     
     // Add user message to chat
-    const userMessage = { id: Date.now().toString(), content: input, sender: "user" as const };
+    const userMessage: Message = { id: Date.now().toString(), content: input, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput("");
     setIsTyping(true);
@@ -73,11 +73,11 @@ const ChatbotSuggestions: React.FC = () => {
       }
       
       // Add AI response to chat
-      const botMessage = { id: Date.now().toString(), content: response, sender: "bot" };
+      const botMessage: Message = { id: Date.now().toString(), content: response, sender: "bot" };
       setMessages(prevMessages => [...prevMessages, botMessage]);
     } catch (error) {
       console.error('Error processing message:', error);
-      const errorMessage = { 
+      const errorMessage: Message = { 
         id: Date.now().toString(), 
         content: "Sorry, I had trouble processing that request. Please try again.", 
         sender: "bot" 
