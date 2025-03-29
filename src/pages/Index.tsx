@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useMusic } from "@/contexts/MusicContext";
 import ApiKeyForm from "@/components/ApiKeyForm";
@@ -10,6 +11,7 @@ import { Search, Play, MessageSquare } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import WelcomeAnimation from "@/components/WelcomeAnimation";
 
 const Index = () => {
   const { 
@@ -25,7 +27,23 @@ const Index = () => {
 
   const [playingVideo, setPlayingVideo] = useState<{id: string, title: string} | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  useEffect(() => {
+    // Check if user has visited before
+    const hasVisited = localStorage.getItem('has_visited');
+    if (hasVisited) {
+      setShowWelcome(false);
+    } else {
+      // Set a timeout to hide the welcome animation after 3.5 seconds
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+        localStorage.setItem('has_visited', 'true');
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     if (hasApiKey) {
@@ -48,6 +66,10 @@ const Index = () => {
     setPlayingVideo(null);
   };
 
+  if (showWelcome) {
+    return <WelcomeAnimation />;
+  }
+
   if (!hasApiKey) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -63,9 +85,22 @@ const Index = () => {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold glow-text mb-2">Music Discovery</h1>
-        <p className="text-muted-foreground">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-4xl font-bold glow-text">Music Discovery</h1>
+          <div className="w-8 h-8 animate-enter">
+            <svg viewBox="0 0 24 24" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <rect fill="#C8102E" width="24" height="24" />
+              <path d="M12,4 L6,12 L12,20 L18,12 Z" fill="#003893" />
+              <path d="M10,12 L12,4 L14,12 L12,20 Z" fill="#003893" />
+              <circle cx="12" cy="12" r="2" fill="#FFFFFF" />
+            </svg>
+          </div>
+        </div>
+        <p className="text-muted-foreground mb-1">
           Discover new music from around the world
+        </p>
+        <p className="text-muted-foreground text-sm italic mb-4 animate-fade-in">
+          नेपालको संगीतको आत्मा पत्ता लगाउनुहोस् – जहाँ परंपरा र नवप्रवर्तनको मिलन हुन्छ, र प्रत्येक गीतले हाम्रो धरोहर र हृदयको कथा बताउँछ।
         </p>
       </header>
 
