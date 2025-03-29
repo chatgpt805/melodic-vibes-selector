@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 
@@ -12,12 +11,12 @@ const WelcomeAnimation: React.FC = () => {
         className="flex flex-col items-center"
       >
         <div className="w-32 h-32 mb-8">
-          <svg viewBox="0 0 24 24" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <rect fill="#C8102E" width="24" height="24" />
-            <path d="M12,4 L6,12 L12,20 L18,12 Z" fill="#003893" />
-            <path d="M10,12 L12,4 L14,12 L12,20 Z" fill="#003893" />
-            <circle cx="12" cy="12" r="2" fill="#FFFFFF" />
-          </svg>
+          {/* Nepal Logo */}
+          <img 
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7XgY7la-lL8IjA0mHpN7P7BuUkE8_8o5YBw&s" 
+            alt="Nepal Logo" 
+            className="w-full h-full object-contain"
+          />
         </div>
         
         <motion.h1 
