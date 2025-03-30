@@ -59,6 +59,10 @@
 }
 
 @layer components {
+  .font-ghibli {
+    font-family: 'Cabin Sketch', cursive;
+  }
+  
   .glow-effect {
     --glow-color: rgba(123, 31, 162, 0.5);
     @apply animate-pulse-glow;

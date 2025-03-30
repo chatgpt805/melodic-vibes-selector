@@ -23,7 +23,7 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(100);
   const [volume, setVolume] = useState(50);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -32,11 +32,33 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   
+  // Simulate video progress for demo purposes
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isOpen && isPlaying && !isLoading) {
+      interval = setInterval(() => {
+        setCurrentTime((prev) => {
+          if (prev >= duration) {
+            setIsPlaying(false);
+            return duration;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isOpen, isPlaying, duration, isLoading]);
+  
   useEffect(() => {
     if (isOpen) {
       // Reset states when opening new video
       setIsPlaying(true);
       setCurrentTime(0);
+      setDuration(Math.floor(Math.random() * 180) + 120); // Random duration between 2-5 minutes
       setIsLoading(true);
       
       // Simulate loading state
@@ -47,6 +69,13 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isOpen, videoId]);
+
+  // Handle video completion
+  useEffect(() => {
+    if (currentTime >= duration) {
+      setIsPlaying(false);
+    }
+  }, [currentTime, duration]);
 
   if (!videoId) return null;
   
@@ -61,7 +90,8 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
   
   // Handle seeking in the video
   const handleSeek = (value: number[]) => {
-    setCurrentTime(value[0]);
+    const newTime = value[0];
+    setCurrentTime(newTime);
     // In a real implementation, this would use YouTube Player API to seek
   };
   
@@ -102,11 +132,28 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
+  // Handle skip forward/backward
+  const handleSkipForward = () => {
+    const newTime = Math.min(currentTime + 10, duration);
+    setCurrentTime(newTime);
+  };
+  
+  const handleSkipBackward = () => {
+    const newTime = Math.max(currentTime - 10, 0);
+    setCurrentTime(newTime);
+  };
+  
+  // Handle restart
+  const handleRestart = () => {
+    setCurrentTime(0);
+    setIsPlaying(true);
+  };
+  
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent className="w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl bg-slate-900/95 border-slate-800 p-0 overflow-hidden">
         <SheetHeader className="flex flex-row items-center justify-between p-4">
-          <SheetTitle className="text-lg truncate text-left">
+          <SheetTitle className="text-lg truncate text-left font-ghibli">
             {title || "Now Playing"}
           </SheetTitle>
           <Button variant="ghost" size="icon" onClick={onClose}>
@@ -138,7 +185,7 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
               <Slider
                 value={[currentTime]}
                 min={0}
-                max={duration || 100}
+                max={duration}
                 step={1}
                 onValueChange={handleSeek}
                 className="cursor-pointer"
@@ -152,7 +199,12 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
             {/* Controls */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="icon" className="text-white">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-white"
+                  onClick={handleSkipBackward}
+                >
                   <SkipBack className="h-4 w-4" />
                 </Button>
                 
@@ -169,7 +221,12 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
                   )}
                 </Button>
                 
-                <Button variant="ghost" size="icon" className="text-white">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-white"
+                  onClick={handleSkipForward}
+                >
                   <SkipForward className="h-4 w-4" />
                 </Button>
                 
@@ -193,7 +250,12 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
               </div>
               
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="icon" className="text-white">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-white"
+                  onClick={handleRestart}
+                >
                   <RotateCw className="h-4 w-4" />
                 </Button>
                 
@@ -216,9 +278,14 @@ const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
         
         {/* Video info section */}
         <div className="p-4">
-          <h3 className="text-lg font-medium mb-2">{title}</h3>
+          <h3 className="text-lg font-medium mb-2 font-ghibli">{title}</h3>
           <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+              onClick={() => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank')}
+            >
               <Play className="h-4 w-4" />
               <span>Watch on YouTube</span>
             </Button>

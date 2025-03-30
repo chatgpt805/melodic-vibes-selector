@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { processQueryWithAI } from "@/lib/huggingface-api";
 import { analyzeImageForMusicRecommendation } from "@/lib/deepseek-api";
+import { findChatResponse } from "@/lib/chatResponses";
 
 interface Message {
   id: string;
@@ -42,7 +42,7 @@ const FullPageChatbot: React.FC<FullPageChatbotProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       id: "welcome", 
-      content: "Hello! I can suggest music based on your mood, artists you like, or genres across multiple platforms. What would you like to listen to today?", 
+      content: "Hello! I'm VidAI, your music discovery assistant. I can suggest music based on your mood, artists you like, or genres across multiple platforms. What would you like to listen to today?", 
       sender: "bot" 
     }
   ]);
@@ -85,7 +85,22 @@ const FullPageChatbot: React.FC<FullPageChatbotProps> = ({ onClose }) => {
       // Simulate AI response delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // AI response logic based on user input
+      // Check for predefined responses first
+      const predefinedResponse = findChatResponse(input);
+      
+      if (predefinedResponse) {
+        // If we have a predefined response, use it
+        const botMessage: Message = { 
+          id: Date.now().toString(), 
+          content: predefinedResponse, 
+          sender: "bot"
+        };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+        setIsTyping(false);
+        return;
+      }
+      
+      // Regular music response processing
       let response = "";
       let artistInfo = undefined;
       let platformSuggestions = undefined;
@@ -305,10 +320,10 @@ const FullPageChatbot: React.FC<FullPageChatbotProps> = ({ onClose }) => {
         <Button variant="ghost" size="icon" onClick={onClose}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h3 className="font-medium text-xl">Music Assistant</h3>
+        <h3 className="font-medium text-xl font-ghibli">VidAI Music Assistant</h3>
         <div className="flex items-center space-x-2">
           <Star className={`h-4 w-4 ${isPremium ? 'text-yellow-400' : 'text-slate-500'}`} />
-          <Label htmlFor="premium-mode" className="text-xs cursor-pointer">VIP AI</Label>
+          <Label htmlFor="premium-mode" className="text-xs cursor-pointer font-ghibli">VIP AI</Label>
           <Switch 
             id="premium-mode" 
             checked={isPremium} 
