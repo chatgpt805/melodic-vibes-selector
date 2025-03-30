@@ -4,7 +4,7 @@ export const YOUTUBE_VIDEO_URL = 'https://www.youtube.com/embed/';
 export const DEFAULT_RESULTS_COUNT = 10;
 
 // API key should be configured by the user
-let apiKey = '';
+let apiKey = 'AIzaSyCdyJti7GTDfKKDYAmzb0qf3-7GQn2HBzA';
 
 export const setYoutubeApiKey = (key: string) => {
   apiKey = key;
@@ -13,7 +13,13 @@ export const setYoutubeApiKey = (key: string) => {
 
 export const getYoutubeApiKey = () => {
   if (!apiKey) {
-    apiKey = localStorage.getItem('youtube_api_key') || '';
+    const storedKey = localStorage.getItem('youtube_api_key');
+    if (storedKey) {
+      apiKey = storedKey;
+    } else {
+      // Use default key if none is found
+      apiKey = 'AIzaSyCdyJti7GTDfKKDYAmzb0qf3-7GQn2HBzA';
+    }
   }
   return apiKey;
 };
