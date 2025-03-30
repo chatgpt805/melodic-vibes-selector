@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +15,6 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import CustomVideoPlayer from "@/components/CustomVideoPlayer";
 import { formatRelativeTime } from "@/lib/utils";
 import { YOUTUBE_VIDEO_URL } from "@/lib/youtube-api";
 
@@ -89,7 +87,7 @@ export const MusicPost = ({ post }: PostProps) => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setComments(data || []);
+      setComments(data as PostComment[] || []);
     } catch (error) {
       console.error("Error loading comments:", error);
       toast.error("Could not load comments");
@@ -114,7 +112,7 @@ export const MusicPost = ({ post }: PostProps) => {
           post_id: post.id,
           user_id: user.id,
           content: newComment.trim()
-        })
+        } as any)
         .select(`
           *,
           profile:profiles(username, avatar_url)
@@ -123,7 +121,7 @@ export const MusicPost = ({ post }: PostProps) => {
 
       if (error) throw error;
 
-      setComments(prev => [data, ...prev]);
+      setComments(prev => [data as PostComment, ...prev]);
       setNewComment("");
       toast.success("Comment added");
     } catch (error) {
@@ -148,7 +146,7 @@ export const MusicPost = ({ post }: PostProps) => {
           .insert({
             post_id: post.id,
             user_id: user.id
-          });
+          } as any);
 
         if (error) throw error;
         setLikesCount(prev => prev + 1);
@@ -342,18 +340,18 @@ export const MusicPost = ({ post }: PostProps) => {
               comments.map(comment => (
                 <div key={comment.id} className="flex gap-3">
                   <Avatar className="h-8 w-8">
-                    {comment.profile.avatar_url ? (
+                    {comment.profile?.avatar_url ? (
                       <AvatarImage src={comment.profile.avatar_url} alt={comment.profile.username} />
                     ) : (
                       <AvatarFallback className="text-xs">
-                        {comment.profile.username.substring(0, 2).toUpperCase()}
+                        {comment.profile?.username?.substring(0, 2).toUpperCase() || "U"}
                       </AvatarFallback>
                     )}
                   </Avatar>
                   <div>
                     <div className="flex gap-2 items-center">
                       <Link to={`/profile/${comment.user_id}`} className="font-medium text-sm hover:text-primary transition-colors">
-                        {comment.profile.username}
+                        {comment.profile?.username || "User"}
                       </Link>
                       <span className="text-xs text-muted-foreground">
                         {formatRelativeTime(new Date(comment.created_at))}

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,9 +80,9 @@ const Social = () => {
       if (error) throw error;
 
       if (pageNumber === 0) {
-        setPosts(data || []);
+        setPosts(data as PostWithProfile[] || []);
       } else {
-        setPosts(prev => [...prev, ...(data || [])]);
+        setPosts(prev => [...prev, ...(data as PostWithProfile[] || [])]);
       }
 
       // Check if there are more posts to load
@@ -168,7 +167,7 @@ const Social = () => {
           title: selectedVideo.snippet.title,
           description: postDescription,
           thumbnail: selectedVideo.snippet.thumbnails.high.url
-        })
+        } as any)
         .select(`
           *,
           profile:profiles(username, avatar_url)
@@ -178,7 +177,7 @@ const Social = () => {
       if (error) throw error;
 
       // Add to the top of the posts list
-      setPosts(prev => [data, ...prev]);
+      setPosts(prev => [data as PostWithProfile, ...prev]);
       
       // Reset form
       setSelectedVideo(null);

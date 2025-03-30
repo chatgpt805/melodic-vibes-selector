@@ -47,9 +47,9 @@ export const UserPosts = ({ userId }: { userId: string }) => {
       if (error) throw error;
 
       if (pageNumber === 0) {
-        setPosts(data);
+        setPosts(data as Post[]);
       } else {
-        setPosts(prev => [...prev, ...data]);
+        setPosts(prev => [...prev, ...(data as Post[])]);
       }
 
       // Check if there are more posts to load

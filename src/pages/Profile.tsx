@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +34,7 @@ const Profile = () => {
           .single();
 
         if (error) throw error;
-        setProfile(data);
+        setProfile(data as Profile);
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast.error("Could not load profile");
