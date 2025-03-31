@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 
@@ -43,7 +44,7 @@ const WelcomeAnimation: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
         >
-          नेपालको संगीतको आत्मा पत्ता लगाउनुहोस् – जहाँ परंपरा र नवप्रवर्तनको मिलन हुन्छ, र प्रत्येक गीतले हाम्रो धरोहर र हृदयको कथा बताउँछ।
+          Developed by Ronak Ghimire
         </motion.p>
         
         <motion.div 

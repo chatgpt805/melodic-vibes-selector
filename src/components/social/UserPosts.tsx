@@ -6,20 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 
+interface PostProfile {
+  username: string;
+  avatar_url: string | null;
+}
+
 interface Post {
   id: string;
   user_id: string;
   video_id: string;
   title: string;
-  description: string;
+  description: string | null;
   created_at: string;
   thumbnail: string;
   likes: number;
   comments_count: number;
-  profile: {
-    username: string;
-    avatar_url: string;
-  };
+  profile: PostProfile;
 }
 
 export const UserPosts = ({ userId }: { userId: string }) => {
@@ -34,6 +36,19 @@ export const UserPosts = ({ userId }: { userId: string }) => {
       const from = pageNumber * limit;
       const to = from + limit - 1;
 
+      // First, get the count of comments for each post
+      const { data: commentsCountData } = await supabase
+        .from('post_comments')
+        .select('post_id, count')
+        .eq('user_id', userId)
+        .group('post_id');
+
+      const commentsCountMap = (commentsCountData || []).reduce((acc: Record<string, number>, item: any) => {
+        acc[item.post_id] = parseInt(item.count);
+        return acc;
+      }, {});
+
+      // Then get the posts
       const { data, error, count } = await supabase
         .from("music_posts")
         .select(`
@@ -46,10 +61,17 @@ export const UserPosts = ({ userId }: { userId: string }) => {
 
       if (error) throw error;
 
+      // Add comments_count to each post
+      const postsWithCommentCount = (data || []).map((post: any) => ({
+        ...post,
+        comments_count: commentsCountMap[post.id] || 0,
+        profile: post.profile || { username: 'Unknown', avatar_url: null }
+      })) as Post[];
+
       if (pageNumber === 0) {
-        setPosts(data as Post[]);
+        setPosts(postsWithCommentCount);
       } else {
-        setPosts(prev => [...prev, ...(data as Post[])]);
+        setPosts(prev => [...prev, ...postsWithCommentCount]);
       }
 
       // Check if there are more posts to load
@@ -105,7 +127,7 @@ export const UserPosts = ({ userId }: { userId: string }) => {
   return (
     <div className="space-y-6">
       {posts.map(post => (
-        <MusicPost key={post.id} post={post} />
+        <MusicPost key={post.id} post={post as any} />
       ))}
       
       {hasMore && (
