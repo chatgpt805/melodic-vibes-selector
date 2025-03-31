@@ -188,14 +188,14 @@ export const MusicPost = ({ post }: { post: Post }) => {
   };
 
   return (
-    <Card className="glass-morph overflow-hidden relative">
+    <Card className="bg-gradient-to-br from-zinc-900 to-zinc-800 border border-zinc-800 overflow-hidden relative hover:shadow-xl transition-all duration-300">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${post.user_id}`}>
-              <Avatar>
+              <Avatar className="border border-zinc-700">
                 <AvatarImage src={post.profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary/20">
+                <AvatarFallback className="bg-red-600/20">
                   {post.profile?.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -205,19 +205,19 @@ export const MusicPost = ({ post }: { post: Post }) => {
               <Link to={`/profile/${post.user_id}`} className="font-medium hover:underline">
                 {post.profile?.username || "Unknown user"}
               </Link>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-zinc-400">
                 {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
               </p>
             </div>
           </div>
           
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-red-500 hover:bg-zinc-800">
             <a 
               href={`https://www.youtube.com/watch?v=${post.video_id}`} 
               target="_blank" 
               rel="noreferrer"
             >
-              <Youtube className="h-5 w-5 text-red-500" />
+              <Youtube className="h-5 w-5" />
             </a>
           </Button>
         </div>
@@ -226,7 +226,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
       <CardContent className="space-y-2">
         <h3 className="font-medium">{post.title}</h3>
         {post.description && (
-          <p className="text-sm text-muted-foreground">{post.description}</p>
+          <p className="text-sm text-zinc-400">{post.description}</p>
         )}
         
         <div className="relative rounded-lg overflow-hidden">
@@ -246,10 +246,10 @@ export const MusicPost = ({ post }: { post: Post }) => {
               <img 
                 src={post.thumbnail} 
                 alt={post.title} 
-                className="w-full h-48 object-cover rounded-lg" 
+                className="w-full h-48 object-cover rounded-md" 
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center">
                   <div className="w-0 h-0 border-y-8 border-y-transparent border-l-12 border-l-white ml-1"></div>
                 </div>
               </div>
@@ -265,7 +265,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
               variant="ghost" 
               size="sm" 
               onClick={toggleLike}
-              className={isLiked ? "text-red-500" : ""}
+              className={isLiked ? "text-red-500 hover:bg-zinc-800" : "hover:bg-zinc-800"}
             >
               <Heart className={`h-5 w-5 mr-1 ${isLiked ? "fill-current" : ""}`} />
               {likeCount > 0 && likeCount}
@@ -273,7 +273,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
             
             <Collapsible open={showComments} onOpenChange={setShowComments}>
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="hover:bg-zinc-800">
                   <MessageCircle className="h-5 w-5 mr-1" />
                   {comments.length > 0 ? comments.length : ""}
                 </Button>
@@ -281,7 +281,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
             </Collapsible>
           </div>
           
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" className="hover:bg-zinc-800">
             <Share className="h-5 w-5 mr-1" />
             Share
           </Button>
@@ -290,9 +290,9 @@ export const MusicPost = ({ post }: { post: Post }) => {
         <Collapsible open={showComments} onOpenChange={setShowComments} className="w-full">
           <CollapsibleContent className="pt-3 space-y-3 w-full">
             <div className="flex items-start space-x-2">
-              <Avatar className="w-8 h-8">
+              <Avatar className="w-8 h-8 border border-zinc-700">
                 <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary/20">
+                <AvatarFallback className="bg-red-600/20">
                   {user?.user_metadata?.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -302,24 +302,24 @@ export const MusicPost = ({ post }: { post: Post }) => {
                   placeholder="Add a comment..." 
                   value={comment} 
                   onChange={(e) => setComment(e.target.value)}
-                  className="min-h-[40px] resize-none bg-slate-800/50 border-slate-700"
+                  className="min-h-[40px] resize-none bg-zinc-800/60 border-zinc-700"
                 />
-                <Button size="sm" onClick={postComment} className="self-end">Post</Button>
+                <Button size="sm" onClick={postComment} className="self-end bg-red-600 hover:bg-red-700">Post</Button>
               </div>
             </div>
             
             {loadingComments ? (
               <div className="py-4 text-center">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-red-500 border-t-transparent"></div>
               </div>
             ) : (
-              <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                 {comments.length > 0 ? (
                   comments.map(comment => (
                     <div key={comment.id} className="flex items-start space-x-2">
-                      <Avatar className="w-8 h-8">
+                      <Avatar className="w-8 h-8 border border-zinc-700">
                         <AvatarImage src={comment.profile?.avatar_url || ""} />
-                        <AvatarFallback className="bg-primary/20">
+                        <AvatarFallback className="bg-red-600/20">
                           {comment.profile?.username?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
@@ -329,7 +329,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
                           <Link to={`/profile/${comment.user_id}`} className="font-medium text-sm hover:underline">
                             {comment.profile?.username || "Unknown user"}
                           </Link>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-zinc-400">
                             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                           </span>
                         </div>
@@ -338,7 +338,7 @@ export const MusicPost = ({ post }: { post: Post }) => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-sm text-muted-foreground">No comments yet. Be the first to comment!</p>
+                  <p className="text-center text-sm text-zinc-400">No comments yet. Be the first to comment!</p>
                 )}
               </div>
             )}
