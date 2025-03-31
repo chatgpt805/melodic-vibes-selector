@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { VideoPlayer } from "@/components/VideoPlayer";
+import VideoPlayer from "@/components/VideoPlayer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface PostProfile {
@@ -231,11 +231,13 @@ export const MusicPost = ({ post }: { post: Post }) => {
         
         <div className="relative rounded-lg overflow-hidden">
           {isPlaying ? (
-            <VideoPlayer 
-              videoId={post.video_id} 
-              height="240px" 
-              className="w-full shadow-lg rounded-lg" 
-            />
+            <iframe 
+              src={`https://www.youtube.com/embed/${post.video_id}?autoplay=1`}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-48 object-cover rounded-lg"
+            ></iframe>
           ) : (
             <div 
               className="relative cursor-pointer group" 

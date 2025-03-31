@@ -44,7 +44,7 @@ const Social = () => {
   const [shareDescription, setShareDescription] = useState("");
   const [sharing, setSharing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { searchMusicVideos, searchResults: ytSearchResults, isSearching } = useMusic();
+  const { searchMusicVideos, videos: ytSearchResults, isLoading: isSearching } = useMusic();
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
@@ -54,16 +54,24 @@ const Social = () => {
       const from = pageNumber * limit;
       const to = from + limit - 1;
 
-      // First, get the count of comments for each post
-      const { data: commentsCountData } = await supabase
+      // Get comments count using a separate query
+      const { data: commentsCountData, error: commentsError } = await supabase
         .from('post_comments')
-        .select('post_id, count')
-        .group('post_id');
+        .select('post_id, count(*)')
+        .then(result => {
+          // Transform the result into the format we need
+          const countMap: Record<string, number> = {};
+          if (result.data) {
+            result.data.forEach(item => {
+              countMap[item.post_id] = parseInt(item.count as string);
+            });
+          }
+          return { data: countMap, error: result.error };
+        });
 
-      const commentsCountMap = (commentsCountData || []).reduce((acc: Record<string, number>, item: any) => {
-        acc[item.post_id] = parseInt(item.count);
-        return acc;
-      }, {});
+      if (commentsError) throw commentsError;
+
+      const commentsCountMap = commentsCountData || {};
 
       const { data, error, count } = await supabase
         .from("music_posts")

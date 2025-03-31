@@ -36,17 +36,25 @@ export const UserPosts = ({ userId }: { userId: string }) => {
       const from = pageNumber * limit;
       const to = from + limit - 1;
 
-      // First, get the count of comments for each post
-      const { data: commentsCountData } = await supabase
+      // Get comments count using a separate query
+      const { data: commentsCountData, error: commentsError } = await supabase
         .from('post_comments')
-        .select('post_id, count')
+        .select('post_id, count(*)')
         .eq('user_id', userId)
-        .group('post_id');
+        .then(result => {
+          // Transform the result into the format we need
+          const countMap: Record<string, number> = {};
+          if (result.data) {
+            result.data.forEach(item => {
+              countMap[item.post_id] = parseInt(item.count as string);
+            });
+          }
+          return { data: countMap, error: result.error };
+        });
 
-      const commentsCountMap = (commentsCountData || []).reduce((acc: Record<string, number>, item: any) => {
-        acc[item.post_id] = parseInt(item.count);
-        return acc;
-      }, {});
+      if (commentsError) throw commentsError;
+
+      const commentsCountMap = commentsCountData || {};
 
       // Then get the posts
       const { data, error, count } = await supabase
@@ -75,7 +83,7 @@ export const UserPosts = ({ userId }: { userId: string }) => {
       }
 
       // Check if there are more posts to load
-      if (count) {
+      if (count !== null) {
         setHasMore(from + data.length < count);
       } else {
         setHasMore(data.length === limit);
