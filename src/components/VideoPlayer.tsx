@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { 
   X, Play, Pause, Volume2, VolumeX, 
   Maximize, Minimize, RotateCw, Loader, 
   Settings, Subtitles, MessageCircle, ThumbsUp,
-  Bell, User, UserPlus, MoreHorizontal, Share
+  Bell, User, UserPlus, MoreHorizontal, Share,
+  Youtube
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -105,14 +106,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     { label: "Hindi", value: "hi" }
   ];
   
-  // Load mock data for demonstration
   useEffect(() => {
     if (isOpen && videoId) {
       setIsLoading(true);
       setCurrentTime(0);
       setIsPlaying(true);
       
-      // Simulate loading channel info
       setTimeout(() => {
         setChannelInfo({
           name: "Music Channel",
@@ -122,11 +121,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         });
       }, 1000);
       
-      // Simulate loading video data
       setTimeout(() => {
-        setDuration(Math.floor(Math.random() * 400) + 180); // Random duration between 3-10 minutes
+        setDuration(Math.floor(Math.random() * 400) + 180);
         
-        // Mock related videos
         const mockRelatedVideos = Array.from({ length: 10 }, (_, i) => ({
           id: `related-${i}`,
           videoId: `vid-${i}`,
@@ -138,7 +135,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }));
         setRelatedVideos(mockRelatedVideos);
         
-        // Mock comments
         const mockComments = Array.from({ length: 15 }, (_, i) => ({
           id: `comment-${i}`,
           author: `User ${i + 1}`,
@@ -155,7 +151,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [isOpen, videoId]);
   
-  // Simulate video progress when playing
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
@@ -178,14 +173,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   
   if (!videoId) return null;
   
-  // Build YouTube embed URL with quality and subtitle parameters
   const buildEmbedUrl = () => {
-    // Convert our quality format to YouTube's format
     const ytQuality = selectedQuality !== "auto" 
       ? `&vq=${selectedQuality.replace('p', '')}`
       : "";
       
-    // Handle subtitles (captions)
     const ytCaptions = subtitlesEnabled && selectedSubtitle !== "off" 
       ? `&cc_load_policy=1&cc_lang_pref=${selectedSubtitle}`
       : "";
@@ -193,36 +185,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0&controls=0${ytQuality}${ytCaptions}`;
   };
   
-  // Handle play/pause toggle
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
-    // In a real implementation, this would use YouTube API to control playback
   };
   
-  // Handle seeking in the video
   const handleSeek = (value: number[]) => {
     const newTime = value[0];
     setCurrentTime(newTime);
-    // In a real implementation, this would use YouTube API to seek
   };
   
-  // Handle volume change
   const handleVolumeChange = (value: number[]) => {
     const newVolume = value[0];
     setVolume(newVolume);
     if (isMuted && newVolume > 0) {
       setIsMuted(false);
     }
-    // In a real implementation, this would use YouTube API to adjust volume
   };
   
-  // Toggle mute state
   const toggleMute = () => {
     setIsMuted(!isMuted);
-    // In a real implementation, this would use YouTube API to mute/unmute
   };
   
-  // Toggle fullscreen
   const toggleFullscreen = () => {
     if (playerContainerRef.current) {
       if (!document.fullscreenElement) {
@@ -237,17 +220,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
   
-  // Change video quality
   const changeQuality = (quality: string) => {
     setSelectedQuality(quality);
     toast({
       title: "Quality Changed",
       description: `Video quality set to ${quality}`,
     });
-    // In a real implementation, reload iframe with new quality parameter
   };
   
-  // Toggle subtitles and set language
   const toggleSubtitles = () => {
     setSubtitlesEnabled(!subtitlesEnabled);
   };
@@ -263,14 +243,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     });
   };
   
-  // Handle restart
   const handleRestart = () => {
     setCurrentTime(0);
     setIsPlaying(true);
-    // In a real implementation, this would use YouTube API to restart
   };
   
-  // Format time display (mm:ss or hh:mm:ss)
   const formatTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -282,20 +259,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Handle skip forward/backward
   const handleSkipForward = () => {
     const newTime = Math.min(currentTime + 10, duration);
     setCurrentTime(newTime);
-    // In a real implementation, this would use YouTube API to skip
   };
   
   const handleSkipBackward = () => {
     const newTime = Math.max(currentTime - 10, 0);
     setCurrentTime(newTime);
-    // In a real implementation, this would use YouTube API to skip
   };
   
-  // Toggle subscription to channel
   const toggleSubscribe = () => {
     if (!user) {
       toast({
@@ -319,7 +292,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     });
   };
   
-  // Post a comment
   const handlePostComment = () => {
     if (!user) {
       toast({
@@ -358,7 +330,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     });
   };
   
-  // Send friend request
   const sendFriendRequest = (userId: string, userName: string) => {
     if (!user) {
       toast({
@@ -379,7 +350,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent className="w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl bg-gradient-to-br from-slate-900 to-purple-950/90 border-slate-800 p-0 overflow-hidden">
         <div className="h-full flex flex-col">
-          {/* Video player area */}
           <div className="relative">
             <SheetHeader className="absolute top-0 left-0 right-0 z-10 flex flex-row items-center justify-between p-4 bg-gradient-to-b from-black/70 to-transparent">
               <SheetTitle className="text-lg truncate text-left font-bold text-white">
@@ -407,9 +377,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 style={{ opacity: isLoading ? 0.3 : 1 }}
               ></iframe>
               
-              {/* Custom controls overlay */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                {/* Progress bar */}
                 <div className="mb-2">
                   <Slider
                     value={[currentTime]}
@@ -425,7 +393,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   </div>
                 </div>
                 
-                {/* Controls */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Button 
@@ -573,14 +540,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
           </div>
           
-          {/* Video info and interaction section */}
           <div className="flex-1 overflow-y-auto">
-            {/* Video title and channel info */}
             <div className="p-4 border-b border-slate-800">
               <h3 className="text-lg font-bold mb-2">{title}</h3>
               
               <div className="flex justify-between items-center">
-                {/* Channel info */}
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarImage src={channelInfo.avatar} />
@@ -613,7 +577,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </div>
               </div>
               
-              {/* Action buttons */}
               <div className="flex mt-4 gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                 <Button 
                   variant="secondary" 
@@ -656,7 +619,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
             
             <div className="p-4 flex gap-2">
-              {/* Online users */}
               <div className="flex items-center">
                 <div className="flex -space-x-2 mr-2">
                   {onlineUsers.slice(0, 3).map((user) => (
@@ -676,7 +638,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
             </div>
             
-            {/* Tabs for related videos and comments */}
             <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="px-4 border-b border-slate-800">
                 <TabsList className="bg-slate-800/50 w-full justify-start">
@@ -697,7 +658,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   <div 
                     key={video.id} 
                     className="flex gap-3 hover:bg-slate-800/50 p-2 rounded-lg cursor-pointer transition-colors"
-                    onClick={() => onClose()} // In real app, would navigate to new video
+                    onClick={() => onClose()}
                   >
                     <div className="w-32 h-18 relative rounded-md overflow-hidden flex-shrink-0">
                       <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
@@ -719,7 +680,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </TabsContent>
               
               <TabsContent value="comments" className="p-4">
-                {/* Comment input */}
                 <div className="flex gap-3 mb-6">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
@@ -749,7 +709,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   </div>
                 </div>
                 
-                {/* Comments list */}
                 <div className="space-y-4">
                   {comments.map((comment) => (
                     <div key={comment.id} className="flex gap-3">

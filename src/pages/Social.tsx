@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -54,14 +53,12 @@ const Social = () => {
       const from = pageNumber * limit;
       const to = from + limit - 1;
 
-      // Get comments count using a separate query
       const commentsCountQuery = await supabase
         .from('post_comments')
         .select('post_id');
-        
+      
       if (commentsCountQuery.error) throw commentsCountQuery.error;
       
-      // Manually count comments by post_id
       const commentsCountMap: Record<string, number> = {};
       if (commentsCountQuery.data) {
         commentsCountQuery.data.forEach(item => {
@@ -82,7 +79,6 @@ const Social = () => {
 
       if (error) throw error;
 
-      // Process the data to add comments count and handle missing profile data
       const processedData = (data || []).map(post => ({
         ...post,
         comments_count: commentsCountMap[post.id] || 0,
@@ -95,7 +91,6 @@ const Social = () => {
         setPosts(prev => [...prev, ...processedData]);
       }
 
-      // Check if there are more posts to load
       if (count !== null) {
         setHasMore(from + data.length < count);
       } else {
@@ -168,7 +163,6 @@ const Social = () => {
 
       if (error) throw error;
 
-      // Process the post to add comments_count and handle missing profile
       const newPost = {
         ...data,
         comments_count: 0,
@@ -182,7 +176,6 @@ const Social = () => {
         description: "Your music has been shared"
       });
       
-      // Reset form and close dialog
       setShareTitle("");
       setShareDescription("");
       setSelectedVideo(null);
