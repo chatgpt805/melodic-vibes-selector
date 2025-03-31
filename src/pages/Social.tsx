@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useMusic } from "@/contexts/MusicContext";
 import { Loader, Search } from "lucide-react";
 import { toast } from "sonner";
+import EnhancedVideoPlayer from "@/components/EnhancedVideoPlayer";
 
 interface PostProfile {
   username: string;
@@ -363,6 +364,13 @@ const Social = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <EnhancedVideoPlayer 
+        videoId={selectedVideo?.id ?? null}
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        title={selectedVideo?.title}
+      />
     </Layout>
   );
 };

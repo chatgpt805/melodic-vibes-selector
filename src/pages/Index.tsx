@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMusic } from "@/contexts/MusicContext";
 import { useAuth } from "@/contexts/AuthContext";
 import MusicFilters from "@/components/MusicFilters";
-import CustomVideoPlayer from "@/components/CustomVideoPlayer";
+import EnhancedVideoPlayer from "@/components/EnhancedVideoPlayer";
 import FullPageChatbot from "@/components/FullPageChatbot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,12 +43,10 @@ const Index = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user has visited before
     const hasVisited = localStorage.getItem('has_visited');
     if (hasVisited) {
       setShowWelcome(false);
     } else {
-      // Set a timeout to hide the welcome animation after 3.5 seconds
       const timer = setTimeout(() => {
         setShowWelcome(false);
         localStorage.setItem('has_visited', 'true');
@@ -99,7 +96,6 @@ const Index = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Navbar */}
         <header className="sticky top-0 z-30 backdrop-blur-md bg-black/30 border-b border-purple-500/20">
           <div className="container max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
@@ -108,7 +104,6 @@ const Index = () => {
                 <h1 className="text-2xl font-ghibli glow-text">VidAI</h1>
               </Link>
               
-              {/* Desktop Navigation */}
               <nav className="hidden md:flex items-center gap-1">
                 <Link to="/">
                   <Button variant="ghost" className="font-medium">
@@ -125,7 +120,6 @@ const Index = () => {
                 </Button>
               </nav>
 
-              {/* User Menu (Desktop) */}
               <div className="hidden md:block">
                 {user ? (
                   <DropdownMenu>
@@ -163,7 +157,6 @@ const Index = () => {
                 )}
               </div>
               
-              {/* Mobile Menu Trigger */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild className="md:hidden">
                   <Button variant="ghost" size="icon" className="md:hidden">
@@ -175,7 +168,6 @@ const Index = () => {
                     <SheetTitle className="font-ghibli text-2xl glow-text">VidAI</SheetTitle>
                   </SheetHeader>
                   
-                  {/* User Info */}
                   {user && (
                     <div className="flex items-center gap-3 p-3 mb-4 rounded-lg bg-white/5">
                       <Avatar>
@@ -189,7 +181,6 @@ const Index = () => {
                     </div>
                   )}
                   
-                  {/* Mobile Nav Links */}
                   <div className="space-y-1">
                     <SheetClose asChild>
                       <Link to="/">
@@ -361,8 +352,7 @@ const Index = () => {
           </div>
         </main>
 
-        {/* Video player component */}
-        <CustomVideoPlayer 
+        <EnhancedVideoPlayer 
           videoId={playingVideo?.id ?? null}
           isOpen={!!playingVideo}
           onClose={closePlayer}
