@@ -37,24 +37,22 @@ export const UserPosts = ({ userId }: { userId: string }) => {
       const to = from + limit - 1;
 
       // Get comments count using a separate query
-      const { data: commentsCountData, error: commentsError } = await supabase
+      const commentsCountQuery = await supabase
         .from('post_comments')
-        .select('post_id, count(*)')
-        .eq('user_id', userId)
-        .then(result => {
-          // Transform the result into the format we need
-          const countMap: Record<string, number> = {};
-          if (result.data) {
-            result.data.forEach(item => {
-              countMap[item.post_id] = parseInt(item.count as string);
-            });
+        .select('post_id')
+        .eq('user_id', userId);
+        
+      if (commentsCountQuery.error) throw commentsCountQuery.error;
+      
+      // Manually count comments by post_id
+      const commentsCountMap: Record<string, number> = {};
+      if (commentsCountQuery.data) {
+        commentsCountQuery.data.forEach(item => {
+          if (item.post_id) {
+            commentsCountMap[item.post_id] = (commentsCountMap[item.post_id] || 0) + 1;
           }
-          return { data: countMap, error: result.error };
         });
-
-      if (commentsError) throw commentsError;
-
-      const commentsCountMap = commentsCountData || {};
+      }
 
       // Then get the posts
       const { data, error, count } = await supabase

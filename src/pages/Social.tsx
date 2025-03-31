@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -55,23 +54,21 @@ const Social = () => {
       const to = from + limit - 1;
 
       // Get comments count using a separate query
-      const { data: commentsCountData, error: commentsError } = await supabase
+      const commentsCountQuery = await supabase
         .from('post_comments')
-        .select('post_id, count(*)')
-        .then(result => {
-          // Transform the result into the format we need
-          const countMap: Record<string, number> = {};
-          if (result.data) {
-            result.data.forEach(item => {
-              countMap[item.post_id] = parseInt(item.count as string);
-            });
+        .select('post_id');
+        
+      if (commentsCountQuery.error) throw commentsCountQuery.error;
+      
+      // Manually count comments by post_id
+      const commentsCountMap: Record<string, number> = {};
+      if (commentsCountQuery.data) {
+        commentsCountQuery.data.forEach(item => {
+          if (item.post_id) {
+            commentsCountMap[item.post_id] = (commentsCountMap[item.post_id] || 0) + 1;
           }
-          return { data: countMap, error: result.error };
         });
-
-      if (commentsError) throw commentsError;
-
-      const commentsCountMap = commentsCountData || {};
+      }
 
       const { data, error, count } = await supabase
         .from("music_posts")
@@ -205,7 +202,7 @@ const Social = () => {
   const loadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchPosts(nextPage);
+    fetchPosts(nextPage, false);
   };
 
   return (
